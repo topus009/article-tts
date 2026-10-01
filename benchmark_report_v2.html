@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTS Benchmark v2 — интерактивный отчёт</title>
+<style>
+:root {
+  --bg: #0d1117; --panel: #161b22; --panel2: #1c2128; --border: #30363d;
+  --text: #c9d1d9; --text-dim: #8b949e; --accent: #58a6ff; --accent2: #79c0ff;
+  --green: #3fb950; --yellow: #d29922; --orange: #db6d28; --red: #f85149; --purple: #a371f7;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 60px;
+}
+header {
+  padding: 20px 24px 12px; text-align: center;
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid var(--border);
+}
+header h1 { color: var(--accent); font-size: 1.6em; margin-bottom: 2px; }
+header .sub { color: var(--text-dim); font-size: 0.9em; }
+
+/* Summary stats */
+.stats { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 14px 20px; }
+.stat {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 16px; text-align: center; min-width: 110px;
+}
+.stat .v { font-size: 1.4em; font-weight: 700; color: var(--accent); }
+.stat .l { font-size: 0.72em; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Sticky toolbar */
+.sticky-top {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(13,17,23,0.97); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.assetbar {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  padding: 8px 16px; border-bottom: 1px solid #21262d; background: rgba(22,27,34,0.6);
+}
+.assetbar label { font-size: 0.8em; color: var(--accent2); font-weight: 600; white-space: nowrap; }
+.assetbar input[type=text] { flex: 1; min-width: 220px; max-width: 520px; font-family: ui-monospace, monospace; font-size: 0.82em; }
+.assetbar .hint { font-size: 0.72em; color: var(--text-dim); }
+.toolbar {
+  padding: 10px 16px;
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+}
+.tgroup { display: flex; align-items: center; gap: 6px; }
+.tgroup label { font-size: 0.78em; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; }
+select, input[type=text] {
+  background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 9px; font-size: 0.85em; outline: none;
+}
+select:focus, input:focus { border-color: var(--accent); }
+input[type=text] { width: 150px; }
+button {
+  background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 12px; font-size: 0.82em; cursor: pointer; transition: all 0.15s;
+}
+button:hover { border-color: var(--accent); color: var(--accent2); }
+button.danger:hover { border-color: var(--red); color: var(--red); }
+button.primary { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+button.primary:hover { background: #388bfd; }
+.spacer { flex: 1; }
+.count { font-size: 0.82em; color: var(--text-dim); }
+.count b { color: var(--accent); }
+
+/* Table */
+.table-wrap { padding: 0 16px; }
+table { width: 100%; border-collapse: collapse; background: var(--panel); min-width: 900px; }
+thead th {
+  position: sticky; top: var(--tb-h, 53px); z-index: 40;
+  background: var(--panel2); color: var(--accent2); padding: 10px 8px; text-align: left;
+  font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer;
+  user-select: none; white-space: nowrap; border-bottom: 2px solid var(--border);
+}
+thead th:hover { color: #fff; background: #262c36; }
+thead th .arrow { opacity: 0.4; font-size: 0.85em; }
+thead th.sorted .arrow { opacity: 1; color: var(--accent); }
+tbody td { padding: 8px; border-bottom: 1px solid #21262d; vertical-align: middle; font-size: 0.88em; }
+tbody tr:hover { background: var(--panel2); }
+tbody tr.rated { background: rgba(31,111,235,0.06); }
+tbody tr.rated:hover { background: rgba(31,111,235,0.12); }
+
+.eng { font-weight: 600; color: #f0f6fc; white-space: nowrap; }
+.eng .meta { display: block; font-weight: 400; font-size: 0.72em; color: var(--text-dim); margin-top: 1px; }
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72em;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.badge.en { background: rgba(56,139,253,0.18); color: #79c0ff; }
+.badge.ru { background: rgba(248,81,73,0.15); color: #ff7b72; }
+.badge.cpu { background: rgba(139,148,158,0.15); color: #adbac7; }
+.badge.cuda { background: rgba(63,185,80,0.15); color: #56d364; }
+
+.rtf-cell { font-variant-numeric: tabular-nums; }
+.rtf-bar { height: 5px; border-radius: 3px; margin-top: 3px; background: #21262d; overflow: hidden; width: 70px; }
+.rtf-fill { height: 100%; border-radius: 3px; }
+.rtf-v { font-weight: 700; font-size: 0.95em; }
+.fast .rtf-v { color: var(--green); } .fast .rtf-fill { background: var(--green); }
+.medium .rtf-v { color: var(--yellow); } .medium .rtf-fill { background: var(--yellow); }
+.slow .rtf-v { color: var(--orange); } .slow .rtf-fill { background: var(--orange); }
+.veryslow .rtf-v { color: var(--red); } .veryslow .rtf-fill { background: var(--red); }
+.num { font-variant-numeric: tabular-nums; color: var(--text-dim); white-space: nowrap; }
+
+audio { width: 200px; height: 30px; vertical-align: middle; }
+audio::-webkit-media-controls-panel { background: var(--panel2); }
+
+/* Stars */
+.stars { display: inline-flex; gap: 1px; cursor: pointer; }
+.star { font-size: 1.25em; color: #3a414a; transition: color 0.1s, transform 0.1s; line-height: 1; }
+.star:hover { transform: scale(1.2); }
+.star.on { color: #e3b341; }
+.star.hover { color: #f0d264; }
+.rate-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+.rate-hint { font-size: 0.62em; color: var(--text-dim); }
+
+.err { color: var(--red); font-size: 0.75em; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+footer { text-align: center; color: #484f58; margin-top: 28px; font-size: 0.82em; padding: 0 20px; }
+footer a { color: var(--accent); text-decoration: none; }
+
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--panel2); border: 1px solid var(--accent); color: var(--text);
+  padding: 10px 20px; border-radius: 8px; font-size: 0.85em; opacity: 0;
+  transition: all 0.3s; z-index: 100; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+.legend { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; padding: 6px 20px 12px; font-size: 0.78em; color: var(--text-dim); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.help { max-width: 1000px; margin: 0 auto 10px; padding: 0 20px; }
+.help details { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; }
+.help summary { cursor: pointer; color: var(--accent); font-size: 0.88em; font-weight: 600; }
+.help p { font-size: 0.82em; color: var(--text-dim); margin: 6px 0; }
+.help kbd { background: var(--panel2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>TTS Benchmark v2</h1>
+  <div class="sub">Интерактивный отбор движков &mdash; фильтры, сортировка, оценки (сохраняются в браузере)</div>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--green)"></i> RTF &lt; 0.5 (очень быстро)</span>
+  <span><i class="dot" style="background:var(--yellow)"></i> 0.5–1.0 (реалтайм)</span>
+  <span><i class="dot" style="background:var(--orange)"></i> 1.0–3.0 (медленно)</span>
+  <span><i class="dot" style="background:var(--red)"></i> &gt; 3.0 (очень медленно)</span>
+  <span style="margin-left:12px">RTF = время генерации / длительность аудио, <b>меньше = лучше</b></span>
+</div>
+
+<div class="sticky-top">
+<div class="assetbar">
+  <label for="assetBase">📁 Папка аудио:</label>
+  <input type="text" id="assetBase" placeholder="benchmark_output/" spellcheck="false">
+  <button id="assetReset" title="Сбросить на benchmark_output/">↺</button>
+  <span class="hint">URL или путь, откуда грузить .wav (по умолчанию <code>benchmark_output/</code>). Для GitHub Pages укажи свой CDN/репо.</span>
+</div>
+<div class="toolbar">
+  <div class="tgroup">
+    <label>Язык</label>
+    <select id="fLang">
+      <option value="all">Все</option>
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+    </select>
+  </div>
+  <div class="tgroup">
+    <label>Устройство</label>
+    <select id="fDevice">
+      <option value="all">Все</option>
+      <option value="cpu">CPU</option>
+      <option value="cuda">GPU</option>
+    </select>
+  </div>
+  <div class="tgroup">
+    <label>Оценка ≥</label>
+    <select id="fRating">
+      <option value="0">Любая</option>
+      <option value="1">1★</option>
+      <option value="2">2★</option>
+      <option value="3">3★</option>
+      <option value="4">4★</option>
+      <option value="5">5★</option>
+    </select>
+  </div>
+  <div class="tgroup">
+    <label>Поиск</label>
+    <input type="text" id="fSearch" placeholder="название движка…">
+  </div>
+  <div class="tgroup">
+    <label style="cursor:pointer"><input type="checkbox" id="fRatedOnly"> только оценённые</label>
+  </div>
+  <div class="tgroup">
+    <label style="cursor:pointer"><input type="checkbox" id="fShowFailed"> показать ошибки</label>
+  </div>
+  <div class="spacer"></div>
+  <div class="count" id="count"></div>
+  <button id="btnExport" title="Скачать оценки (JSON)">⬇ Оценки</button>
+  <button id="btnReset" class="danger" title="Сбросить оценки и фильтры (очистить localStorage)">↺ Сброс</button>
+</div>
+</div>
+
+<div class="help">
+  <details>
+    <summary>Как пользоваться (кликни)</summary>
+    <p><b>Цель:</b> прослушать примеры, поставить оценки ★ (1–5) и отфильтровать лучшие движки для работы.</p>
+    <p><b>Оценки и фильтры сохраняются автоматически</b> в localStorage браузера — при повторном открытии всё на месте. Кнопка <kbd>↺ Сброс</kbd> очищает их.</p>
+    <p><b>Сортировка:</b> кликни по заголовку любого столбца (Engine, RTF, Gen, …). Повторный клик меняет направление.</p>
+    <p><b>Фильтр по оценке:</b> выбери «Оценка ≥ 4» чтобы видеть только хорошие. «Только оценённые» скрывает неоценённые.</p>
+    <p><b>Экспорт:</b> кнопка <kbd>⬇ Оценки</kbd> скачает JSON с твоими оценками — чтобы сохранить выбор или перенести.</p>
+    <p><b>Аудио:</b> кнопка ▶ в каждом ряду. Тексты — первые абзацы твоих статей (EN и RU).</p>
+  </details>
+</div>
+
+<div class="table-wrap">
+<table id="tbl">
+  <thead>
+    <tr>
+      <th data-sort="engine">Движок <span class="arrow">↕</span></th>
+      <th data-sort="lang">Язык <span class="arrow">↕</span></th>
+      <th data-sort="device">Устр. <span class="arrow">↕</span></th>
+      <th data-sort="rtf">RTF <span class="arrow">↕</span></th>
+      <th data-sort="gen">Генерация <span class="arrow">↕</span></th>
+      <th data-sort="dur">Аудио <span class="arrow">↕</span></th>
+      <th>Прослушать</th>
+      <th data-sort="rating">Оценка <span class="arrow">↕</span></th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+</div>
+
+<footer>
+  TTS Benchmark v2 &bull; GPU: NVIDIA GTX 1650 Ti (4GB) &bull; CPU: 12 ядер &bull; RAM: 30GB<br>
+  Данные: <code>benchmark_output/results.json</code> &bull; <a href="benchmark_report.html">версия v1 (простая таблица)</a>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [{"engine": "Kokoro", "lang": "en", "device": "cpu", "rtf": 0.5004, "gen": 24.671, "dur": 49.3, "file": "Kokoro_en_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "82M", "langs": "EN(+JA)", "note": "Эталон EN lightweight"}, {"engine": "Kokoro", "lang": "ru", "device": "cpu", "rtf": 0.4286, "gen": 48.671, "dur": 113.55, "file": "Kokoro_ru_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "82M", "langs": "EN(+JA)", "note": "Эталон EN lightweight"}, {"engine": "MMS", "lang": "en", "device": "cpu", "rtf": 0.3688, "gen": 17.536, "dur": 47.552, "file": "MMS_en_cpu.wav", "status": "ok", "license": "CC-BY-NC", "type": "VITS", "langs": "1000+", "note": "Facebook, мультиязычный"}, {"engine": "MMS", "lang": "ru", "device": "cpu", "rtf": 0.3529, "gen": 20.067, "dur": 56.864, "file": "MMS_ru_cpu.wav", "status": "ok", "license": "CC-BY-NC", "type": "VITS", "langs": "1000+", "note": "Facebook, мультиязычный"}, {"engine": "Piper", "lang": "en", "device": "cpu", "rtf": 0.081, "gen": 3.972, "dur": 49.052, "file": "Piper_en_cpu.wav", "status": "ok", "license": "MIT + CC0", "type": "VITS/ONNX", "langs": "22+", "note": "Лёгкий, мгновенный, CC0-голоса"}, {"engine": "Piper", "lang": "ru", "device": "cpu", "rtf": 0.0749, "gen": 4.313, "dur": 57.585, "file": "Piper_ru_cpu.wav", "status": "ok", "license": "MIT + CC0", "type": "VITS/ONNX", "langs": "22+", "note": "Лёгкий, мгновенный, CC0-голоса"}, {"engine": "SeamlessM4T", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "SeamlessM4T", "lang": "ru", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "DIA", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "unknown", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "MARS5", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ModuleNotFoundError: No module named 'mars5'", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "Kokoro", "lang": "en", "device": "cuda", "rtf": 0.1788, "gen": 8.817, "dur": 49.3, "file": "Kokoro_en_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "82M", "langs": "EN(+JA)", "note": "Эталон EN lightweight"}, {"engine": "Kokoro", "lang": "ru", "device": "cuda", "rtf": 0.0832, "gen": 9.451, "dur": 113.55, "file": "Kokoro_ru_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "82M", "langs": "EN(+JA)", "note": "Эталон EN lightweight"}, {"engine": "MMS", "lang": "en", "device": "cuda", "rtf": 0.1131, "gen": 5.317, "dur": 46.992, "file": "MMS_en_cuda.wav", "status": "ok", "license": "CC-BY-NC", "type": "VITS", "langs": "1000+", "note": "Facebook, мультиязычный"}, {"engine": "MMS", "lang": "ru", "device": "cuda", "rtf": 0.0865, "gen": 4.894, "dur": 56.56, "file": "MMS_ru_cuda.wav", "status": "ok", "license": "CC-BY-NC", "type": "VITS", "langs": "1000+", "note": "Facebook, мультиязычный"}, {"engine": "Piper", "lang": "en", "device": "cuda", "rtf": 0.0804, "gen": 3.992, "dur": 49.644, "file": "Piper_en_cuda.wav", "status": "ok", "license": "MIT + CC0", "type": "VITS/ONNX", "langs": "22+", "note": "Лёгкий, мгновенный, CC0-голоса"}, {"engine": "Piper", "lang": "ru", "device": "cuda", "rtf": 0.0767, "gen": 4.406, "dur": 57.458, "file": "Piper_ru_cuda.wav", "status": "ok", "license": "MIT + CC0", "type": "VITS/ONNX", "langs": "22+", "note": "Лёгкий, мгновенный, CC0-голоса"}, {"engine": "SeamlessM4T", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "SeamlessM4T", "lang": "ru", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "DIA", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 10.62 MiB is free. Including ", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "MARS5", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ModuleNotFoundError: No module named 'mars5'", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "Supertonic", "lang": "en", "device": "cpu", "rtf": 0.46, "gen": 22.4, "dur": 49.1, "file": "Supertonic_en_cpu.wav", "status": "ok", "license": "MIT", "type": "99M/ONNX", "langs": "31", "note": "Мультиязычный, новинка 2026"}, {"engine": "Supertonic", "lang": "ru", "device": "cpu", "rtf": 0.57, "gen": 29.2, "dur": 50.9, "file": "Supertonic_ru_cpu.wav", "status": "ok", "license": "MIT", "type": "99M/ONNX", "langs": "31", "note": "Мультиязычный, новинка 2026"}, {"engine": "Supertonic", "lang": "en", "device": "cuda", "rtf": 0.46, "gen": 22.4, "dur": 49.1, "file": "Supertonic_en_cuda.wav", "status": "ok", "license": "MIT", "type": "99M/ONNX", "langs": "31", "note": "Мультиязычный, новинка 2026"}, {"engine": "Supertonic", "lang": "ru", "device": "cuda", "rtf": 0.43, "gen": 21.7, "dur": 50.9, "file": "Supertonic_ru_cuda.wav", "status": "ok", "license": "MIT", "type": "99M/ONNX", "langs": "31", "note": "Мультиязычный, новинка 2026"}, {"engine": "OmniVoice", "lang": "en", "device": "cpu", "rtf": 3.54, "gen": 170.7, "dur": 48.2, "file": "OmniVoice_en_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "~500M", "langs": "600+", "note": "k2-fsa, natural, медленный"}, {"engine": "OmniVoice", "lang": "ru", "device": "cpu", "rtf": 3.61, "gen": 173.6, "dur": 48.1, "file": "OmniVoice_ru_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "~500M", "langs": "600+", "note": "k2-fsa, natural, медленный"}, {"engine": "pocket-tts", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "FileNotFoundError: Config file not found: /home/topus009/miniconda3/envs/tts-bench/lib/python3.10/site-packages/pocket_tts/config/en.yaml. Did you mak", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "sherpa-onnx", "lang": "en", "device": "cpu", "rtf": 0.3156, "gen": 12.21, "dur": 38.684, "file": "sherpa-onnx_en_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "VITS/ONNX", "langs": "RU+EN", "note": "Быстрейший (RTF 0.07), k2-fsa"}, {"engine": "sherpa-onnx", "lang": "ru", "device": "cpu", "rtf": 0.0731, "gen": 3.395, "dur": 46.449, "file": "sherpa-onnx_ru_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "VITS/ONNX", "langs": "RU+EN", "note": "Быстрейший (RTF 0.07), k2-fsa"}, {"engine": "pocket-tts", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "FileNotFoundError: Config file not found: /home/topus009/miniconda3/envs/tts-bench/lib/python3.10/site-packages/pocket_tts/config/en.yaml. Did you mak", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "sherpa-onnx", "lang": "en", "device": "cuda", "rtf": 0.3152, "gen": 12.252, "dur": 38.87, "file": "sherpa-onnx_en_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "VITS/ONNX", "langs": "RU+EN", "note": "Быстрейший (RTF 0.07), k2-fsa"}, {"engine": "sherpa-onnx", "lang": "ru", "device": "cuda", "rtf": 0.0732, "gen": 3.325, "dur": 45.397, "file": "sherpa-onnx_ru_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "VITS/ONNX", "langs": "RU+EN", "note": "Быстрейший (RTF 0.07), k2-fsa"}, {"engine": "OmniVoice", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ModuleNotFoundError: Could not import module 'PreTrainedModel'. Are this object's requirements defined correctly?", "license": "Apache-2.0", "type": "~500M", "langs": "600+", "note": "k2-fsa, natural, медленный"}, {"engine": "OmniVoice", "lang": "ru", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "ModuleNotFoundError: Could not import module 'PreTrainedModel'. Are this object's requirements defined correctly?", "license": "Apache-2.0", "type": "~500M", "langs": "600+", "note": "k2-fsa, natural, медленный"}, {"engine": "Chatterbox", "lang": "en", "device": "cpu", "rtf": 7.3431, "gen": 271.402, "dur": 36.96, "file": "Chatterbox_en_cpu.wav", "status": "ok", "license": "MIT", "type": "500M", "langs": "13", "note": "SOTA, обрезает длинные тексты"}, {"engine": "Chatterbox", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 24.19 MiB is free. Including ", "license": "MIT", "type": "500M", "langs": "13", "note": "SOTA, обрезает длинные тексты"}, {"engine": "Vosk-TTS", "lang": "ru", "device": "cpu", "rtf": 1.4887, "gen": 82.909, "dur": 55.693, "file": "Vosk-TTS_ru_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "VITS", "langs": "RU", "note": "Только RU, нужна очистка текста"}, {"engine": "Chatterbox", "lang": "ru", "device": "cpu", "rtf": 7.3567, "gen": 207.165, "dur": 28.16, "file": "Chatterbox_ru_cpu.wav", "status": "ok", "license": "MIT", "type": "500M", "langs": "13", "note": "SOTA, обрезает длинные тексты"}, {"engine": "Vosk-TTS", "lang": "ru", "device": "cuda", "rtf": 1.5544, "gen": 86.567, "dur": 55.693, "file": "Vosk-TTS_ru_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "VITS", "langs": "RU", "note": "Только RU, нужна очистка текста"}, {"engine": "Chatterbox", "lang": "ru", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 12.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 20.19 MiB is free. Including ", "license": "MIT", "type": "500M", "langs": "13", "note": "SOTA, обрезает длинные тексты"}, {"engine": "MeloTTS", "lang": "en", "device": "cpu", "rtf": 0.81, "gen": 38.8, "dur": 48.1, "file": "MeloTTS_en_cpu.wav", "status": "ok", "license": "MIT", "type": "~200M", "langs": "EN/ES/FR/ZH/JA", "note": "Без RU"}, {"engine": "Moss-TTS", "lang": "ru", "device": "cpu", "rtf": 14.2814, "gen": 856.882, "dur": 60.0, "file": "Moss-TTS_ru_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "100M", "langs": "12", "note": "Натуральная речь, cuda в 19× быстрее"}, {"engine": "Moss-TTS", "lang": "en", "device": "cpu", "rtf": 10.3823, "gen": 622.94, "dur": 60.0, "file": "Moss-TTS_en_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "100M", "langs": "12", "note": "Натуральная речь, cuda в 19× быстрее"}, {"engine": "StyleTTS2", "lang": "en", "device": "cpu", "rtf": 5.6, "gen": 308.9, "dur": 55.2, "file": "StyleTTS2_en_cpu.wav", "status": "ok", "license": "MIT", "type": "diffusion", "langs": "EN", "note": "EN-only, высокое качество"}, {"engine": "MeloTTS", "lang": "en", "device": "cuda", "rtf": 0.3691, "gen": 17.857, "dur": 48.378, "file": "MeloTTS_en_cuda.wav", "status": "ok", "license": "MIT", "type": "~200M", "langs": "EN/ES/FR/ZH/JA", "note": "Без RU"}, {"engine": "Moss-TTS", "lang": "en", "device": "cuda", "rtf": 0.5544, "gen": 33.262, "dur": 60.0, "file": "Moss-TTS_en_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "100M", "langs": "12", "note": "Натуральная речь, cuda в 19× быстрее"}, {"engine": "Moss-TTS", "lang": "ru", "device": "cuda", "rtf": 0.5494, "gen": 32.966, "dur": 60.0, "file": "Moss-TTS_ru_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "100M", "langs": "12", "note": "Натуральная речь, cuda в 19× быстрее"}, {"engine": "VoxCPM", "lang": "en", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 16.75 MiB is free. Including ", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "VoxCPM", "lang": "ru", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 16.75 MiB is free. Including ", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "Bark", "lang": "en", "device": "cuda", "rtf": 2.5558, "gen": 35.645, "dur": 13.947, "file": "Bark_en_cuda.wav", "status": "ok", "license": "MIT", "type": "~4GB", "langs": "13+", "note": "Suno, обрезает длинные тексты"}, {"engine": "Bark", "lang": "ru", "device": "cuda", "rtf": 2.2438, "gen": 24.981, "dur": 11.133, "file": "Bark_ru_cuda.wav", "status": "ok", "license": "MIT", "type": "~4GB", "langs": "13+", "note": "Suno, обрезает длинные тексты"}, {"engine": "Maha TTS", "lang": "en", "device": "cuda", "rtf": 15.7256, "gen": 314.21, "dur": 19.981, "file": "Maha_TTS_en_cuda.wav", "status": "ok", "license": "MIT", "type": "~300M", "langs": "EN", "note": "Только cuda, аудио ~20s макс"}, {"engine": "F5-TTS", "lang": "en", "device": "cuda", "rtf": 9.6335, "gen": 692.869, "dur": 71.923, "file": "F5-TTS_en_cuda.wav", "status": "ok", "license": "CC-BY-NC", "type": "flow-match", "langs": "EN/RU", "note": "RU 'растекается' (поздний EOS)"}, {"engine": "F5-TTS", "lang": "ru", "device": "cuda", "rtf": null, "gen": null, "dur": null, "file": null, "status": "timeout (1200s)", "license": "CC-BY-NC", "type": "flow-match", "langs": "EN/RU", "note": "RU 'растекается' (поздний EOS)"}, {"engine": "StyleTTS2", "lang": "en", "device": "cuda", "rtf": 0.4788, "gen": 26.946, "dur": 56.279, "file": "StyleTTS2_en_cuda.wav", "status": "ok", "license": "MIT", "type": "diffusion", "langs": "EN", "note": "EN-only, высокое качество"}, {"engine": "Parler TTS", "lang": "en", "device": "cuda", "rtf": 1.9851, "gen": 116.864, "dur": 58.871, "file": "Parler_TTS_en_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "mini-v1", "langs": "EN", "note": "Description-controllable, fp16 на GPU"}, {"engine": "Vall-E X", "lang": "en", "device": "cuda", "rtf": 0.8975, "gen": 51.841, "dur": 57.76, "file": "Vall-E_X_en_cuda.wav", "status": "ok", "license": "MS Research", "type": "~1GB", "langs": "EN/CN/JP", "note": "Microsoft, preset-prompt"}, {"engine": "XTTS", "lang": "en", "device": "cuda", "rtf": 0.8235, "gen": 42.634, "dur": 51.771, "file": "XTTS_en_cuda.wav", "status": "ok", "license": "CPML (некоммерч.)", "type": "~500M", "langs": "17", "note": "Coqui, voice-clone"}, {"engine": "XTTS", "lang": "ru", "device": "cuda", "rtf": 0.758, "gen": 40.925, "dur": 53.99, "file": "XTTS_ru_cuda.wav", "status": "ok", "license": "CPML (некоммерч.)", "type": "~500M", "langs": "17", "note": "Coqui, voice-clone"}, {"engine": "CosyVoice", "lang": "en", "device": "cuda", "rtf": 1.3314, "gen": 62.683, "dur": 47.08, "file": "CosyVoice_en_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "500M", "langs": "9", "note": "Alibaba, zero-shot (RU caveats)"}, {"engine": "CosyVoice", "lang": "ru", "device": "cuda", "rtf": 1.1325, "gen": 82.671, "dur": 73.0, "file": "CosyVoice_ru_cuda.wav", "status": "ok", "license": "Apache-2.0", "type": "500M", "langs": "9", "note": "Alibaba, zero-shot (RU caveats)"}, {"engine": "VoxCPM", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": " 11%|█▏        | 100/886 [04:36<33:57,  2.59s/it]", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "VoxCPM", "lang": "ru", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "100%|██████████| 10/10 [00:26<00:00,  2.65s/it]", "license": "", "type": "", "langs": "", "note": ""}, {"engine": "Bark", "lang": "en", "device": "cpu", "rtf": 10.2494, "gen": 142.671, "dur": 13.92, "file": "Bark_en_cpu.wav", "status": "ok", "license": "MIT", "type": "~4GB", "langs": "13+", "note": "Suno, обрезает длинные тексты"}, {"engine": "Bark", "lang": "ru", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "  3%|▎         | 1/35 [00:01<01:07,  1.98s/it]", "license": "MIT", "type": "~4GB", "langs": "13+", "note": "Suno, обрезает длинные тексты"}, {"engine": "Maha TTS", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": " 18%|█▊        | 178/1000 [01:37<08:08,  1.68it/s]", "license": "MIT", "type": "~300M", "langs": "EN", "note": "Только cuda, аудио ~20s макс"}, {"engine": "F5-TTS", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "unknown", "license": "CC-BY-NC", "type": "flow-match", "langs": "EN/RU", "note": "RU 'растекается' (поздний EOS)"}, {"engine": "F5-TTS", "lang": "ru", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "unknown", "license": "CC-BY-NC", "type": "flow-match", "langs": "EN/RU", "note": "RU 'растекается' (поздний EOS)"}, {"engine": "Parler TTS", "lang": "en", "device": "cpu", "rtf": 10.89, "gen": 590.916, "dur": 54.262, "file": "Parler_TTS_en_cpu.wav", "status": "ok", "license": "Apache-2.0", "type": "mini-v1", "langs": "EN", "note": "Description-controllable, fp16 на GPU"}, {"engine": "Vall-E X", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "unknown", "license": "MS Research", "type": "~1GB", "langs": "EN/CN/JP", "note": "Microsoft, preset-prompt"}, {"engine": "XTTS", "lang": "en", "device": "cpu", "rtf": 3.0125, "gen": 149.501, "dur": 49.627, "file": "XTTS_en_cpu.wav", "status": "ok", "license": "CPML (некоммерч.)", "type": "~500M", "langs": "17", "note": "Coqui, voice-clone"}, {"engine": "XTTS", "lang": "ru", "device": "cpu", "rtf": 3.0317, "gen": 160.187, "dur": 52.838, "file": "XTTS_ru_cpu.wav", "status": "ok", "license": "CPML (некоммерч.)", "type": "~500M", "langs": "17", "note": "Coqui, voice-clone"}, {"engine": "CosyVoice", "lang": "en", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "unknown", "license": "Apache-2.0", "type": "500M", "langs": "9", "note": "Alibaba, zero-shot (RU caveats)"}, {"engine": "CosyVoice", "lang": "ru", "device": "cpu", "rtf": null, "gen": null, "dur": null, "file": null, "status": "2026-10-01 22:11:21,898 INFO building fst for zh_normalizer ...", "license": "Apache-2.0", "type": "500M", "langs": "9", "note": "Alibaba, zero-shot (RU caveats)"}];
+const LS_RATINGS = "tts_v2_ratings";
+const LS_PREFS = "tts_v2_prefs";
+const LS_ASSET = "tts_v2_assetbase";
+const DEFAULT_BASE = "benchmark_output/";
+
+// ---- state ----
+let ratings = {};
+let prefs = { lang:"all", device:"all", minRating:0, search:"", ratedOnly:false, showFailed:false, sortCol:"engine", sortDir:"asc" };
+let assetBase = DEFAULT_BASE;
+try { ratings = JSON.parse(localStorage.getItem(LS_RATINGS) || "{}"); } catch(e){ ratings={}; }
+try { const p = JSON.parse(localStorage.getItem(LS_PREFS) || "null"); if (p) prefs = Object.assign(prefs, p); } catch(e){}
+try { const ab = localStorage.getItem(LS_ASSET); if (ab !== null) assetBase = normBase(ab); } catch(e){}
+
+// Normalize an asset-folder value into a base that ends with "/"
+function normBase(b){
+  b = (b == null ? "" : String(b)).trim();
+  if (!b) return DEFAULT_BASE;
+  if (!b.endsWith("/")) b += "/";
+  return b;
+}
+function audioSrc(file){ return assetBase + file; }
+
+const key = r => r.engine + "::" + r.lang + "::" + r.device;
+let lsOK = true;
+function saveRatings(){ try{ localStorage.setItem(LS_RATINGS, JSON.stringify(ratings)); }catch(e){ lsWarn(); } }
+function savePrefs(){ try{ localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); }catch(e){ lsWarn(); } }
+function lsWarn(){ if(lsOK){ lsOK=false; toast("⚠ localStorage недоступен — оценки не сохранятся после закрытия"); } }
+// probe localStorage availability once
+try { localStorage.setItem("__probe__","1"); localStorage.removeItem("__probe__"); }
+catch(e){ lsOK=false; }
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+function rtfClass(rtf){
+  if (rtf == null) return "";
+  if (rtf < 0.5) return "fast";
+  if (rtf < 1.0) return "medium";
+  if (rtf < 3.0) return "slow";
+  return "veryslow";
+}
+
+// ---- filtering + sorting ----
+function getRows(){
+  let rows = DATA.slice();
+  if (!prefs.showFailed) rows = rows.filter(r => r.status === "ok");
+  if (prefs.lang !== "all") rows = rows.filter(r => r.lang === prefs.lang);
+  if (prefs.device !== "all") rows = rows.filter(r => r.device === prefs.device);
+  const minR = parseInt(prefs.minRating, 10) || 0;
+  if (minR > 0) rows = rows.filter(r => (ratings[key(r)] || 0) >= minR);
+  if (prefs.ratedOnly) rows = rows.filter(r => (ratings[key(r)] || 0) > 0);
+  const q = (prefs.search || "").trim().toLowerCase();
+  if (q) rows = rows.filter(r => r.engine.toLowerCase().includes(q));
+
+  const col = prefs.sortCol, dir = prefs.sortDir === "desc" ? -1 : 1;
+  rows.sort((a,b)=>{
+    let va, vb;
+    if (col === "rating"){ va = ratings[key(a)]||0; vb = ratings[key(b)]||0; }
+    else if (col === "rtf" || col === "gen" || col === "dur"){
+      va = a[col]; vb = b[col];
+      if (va == null) va = col==="rtf"? 1e9 : 1e9; // nulls last
+      if (vb == null) vb = 1e9;
+      return (va - vb) * dir;
+    } else {
+      va = (a[col]||"").toString().toLowerCase(); vb = (b[col]||"").toString().toLowerCase();
+      if (va < vb) return -1*dir; if (va > vb) return 1*dir;
+      // tiebreak: lang then device then rtf
+      const ka = a.lang+a.device, kb = b.lang+b.device;
+      if (ka < kb) return -1; if (ka > kb) return 1;
+      return ((a.rtf||1e9)-(b.rtf||1e9));
+    }
+    return (va - vb) * dir;
+  });
+  return rows;
+}
+
+// ---- render ----
+function starsHtml(r){
+  const cur = ratings[key(r)] || 0;
+  let s = '<div class="rate-wrap"><div class="stars" data-key="'+key(r)+'">';
+  for (let i=1;i<=5;i++){
+    s += '<span class="star'+(i<=cur?' on':'')+'" data-v="'+i+'">★</span>';
+  }
+  s += '</div><span class="rate-hint">'+(cur? cur+' из 5' : 'кликни ★')+'</span></div>';
+  return s;
+}
+
+function render(){
+  const rows = getRows();
+  const tb = document.getElementById("tbody");
+  tb.innerHTML = "";
+  for (const r of rows){
+    const tr = document.createElement("tr");
+    if ((ratings[key(r)]||0) > 0) tr.classList.add("rated");
+    const ok = r.status === "ok";
+    const rc = rtfClass(r.rtf);
+    const barW = r.rtf==null?0:Math.min(100, Math.max(4, (1/Math.max(r.rtf,0.05))*8));
+    tr.innerHTML =
+      '<td class="eng">'+r.engine+
+        '<span class="meta">'+(r.license||'')+(r.type?' · '+r.type:'')+'</span></td>'+
+      '<td><span class="badge '+r.lang+'">'+(r.lang==='ru'?'RU':'EN')+'</span></td>'+
+      '<td><span class="badge '+r.device+'">'+(r.device==='cuda'?'GPU':'CPU')+'</span></td>'+
+      (ok
+        ? '<td class="rtf-cell '+rc+'"><span class="rtf-v">'+r.rtf.toFixed(2)+'</span>'+
+          '<div class="rtf-bar"><div class="rtf-fill" style="width:'+barW+'%"></div></div></td>'+
+          '<td class="num">'+r.gen.toFixed(1)+'s</td>'+
+          '<td class="num">'+r.dur.toFixed(1)+'s</td>'+
+          '<td><audio controls preload="none"><source src="'+audioSrc(r.file)+'" type="audio/wav"></audio></td>'
+        : '<td colspan="4"><span class="err" title="'+(r.status||'').replace(/"/g,'&quot;')+'">✗ '+(r.status||'error')+'</span></td>')+
+      '<td>'+starsHtml(r)+'</td>';
+    tb.appendChild(tr);
+  }
+  // counts + stats
+  const okRows = rows.filter(r=>r.status==='ok');
+  document.getElementById("count").innerHTML =
+    'Показано: <b>'+rows.length+'</b>'+(okRows.length!==rows.length? ' ('+okRows.length+' ок)':'');
+  renderStats();
+  // sort arrows
+  document.querySelectorAll("thead th").forEach(th=>{
+    th.classList.toggle("sorted", th.dataset.sort === prefs.sortCol);
+    const a = th.querySelector(".arrow");
+    if (a) a.textContent = th.dataset.sort===prefs.sortCol ? (prefs.sortDir==="asc"?"↑":"↓") : "↕";
+  });
+}
+
+function renderStats(){
+  const rows = getRows().filter(r=>r.status==='ok');
+  const engines = new Set(rows.map(r=>r.engine));
+  const rated = rows.filter(r=>(ratings[key(r)]||0)>0);
+  const avg = rated.length? (rated.reduce((s,r)=>s+ratings[key(r)],0)/rated.length) : 0;
+  let fastest = null;
+  for (const r of rows){ if (r.rtf!=null && (fastest==null || r.rtf<fastest.rtf)) fastest=r; }
+  const el = document.getElementById("stats");
+  el.innerHTML =
+    '<div class="stat"><div class="v">'+rows.length+'</div><div class="l">результатов</div></div>'+
+    '<div class="stat"><div class="v">'+engines.size+'</div><div class="l">движков</div></div>'+
+    '<div class="stat"><div class="v">'+rated.length+'</div><div class="l">оценено</div></div>'+
+    '<div class="stat"><div class="v">'+(avg?avg.toFixed(1)+'★':'—')+'</div><div class="l">средняя оценка</div></div>'+
+    '<div class="stat"><div class="v" style="font-size:1.05em">'+(fastest?fastest.engine:'—')+'</div><div class="l">быстрейший '+(fastest?'(RTF '+fastest.rtf.toFixed(2)+')':'')+'</div></div>';
+}
+
+// ---- events ----
+function bindFilters(){
+  const set = (id, prop, isInt)=>{
+    const el = document.getElementById(id);
+    el.value = prefs[prop];
+    el.addEventListener("change", ()=>{
+      prefs[prop] = isInt? parseInt(el.value,10) : el.value;
+      savePrefs(); render();
+    });
+  };
+  set("fLang","lang"); set("fDevice","device"); set("fRating","minRating",true);
+  const se = document.getElementById("fSearch"); se.value = prefs.search||"";
+  se.addEventListener("input", ()=>{ prefs.search = se.value; savePrefs(); render(); });
+  const ro = document.getElementById("fRatedOnly"); ro.checked = !!prefs.ratedOnly;
+  ro.addEventListener("change", ()=>{ prefs.ratedOnly = ro.checked; savePrefs(); render(); });
+  const sf = document.getElementById("fShowFailed"); sf.checked = !!prefs.showFailed;
+  sf.addEventListener("change", ()=>{ prefs.showFailed = sf.checked; savePrefs(); render(); });
+
+  document.querySelectorAll("thead th[data-sort]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      const c = th.dataset.sort;
+      if (prefs.sortCol === c) prefs.sortDir = prefs.sortDir==="asc"?"desc":"asc";
+      else { prefs.sortCol = c; prefs.sortDir = (c==="engine"||c==="lang"||c==="device")?"asc":"desc"; }
+      savePrefs(); render();
+    });
+  });
+
+  document.getElementById("btnReset").addEventListener("click", ()=>{
+    if (!confirm("Сбросить ВСЕ оценки, фильтры и папку аудио? (localStorage будет очищен)")) return;
+    ratings = {};
+    prefs = { lang:"all", device:"all", minRating:0, search:"", ratedOnly:false, showFailed:false, sortCol:"engine", sortDir:"asc" };
+    assetBase = DEFAULT_BASE;
+    localStorage.removeItem(LS_RATINGS); localStorage.removeItem(LS_PREFS); localStorage.removeItem(LS_ASSET);
+    // reset UI controls
+    document.getElementById("fLang").value="all"; document.getElementById("fDevice").value="all";
+    document.getElementById("fRating").value="0"; document.getElementById("fSearch").value="";
+    document.getElementById("fRatedOnly").checked=false; document.getElementById("fShowFailed").checked=false;
+    document.getElementById("assetBase").value="";
+    render(); toast("Оценки, фильтры и папка сброшены");
+  });
+
+  // ---- asset folder input ----
+  const ab = document.getElementById("assetBase");
+  ab.value = (assetBase === DEFAULT_BASE) ? "" : assetBase;
+  function applyAssetBase(raw){
+    assetBase = normBase(raw);
+    try { localStorage.setItem(LS_ASSET, assetBase); } catch(e){ lsWarn(); }
+    render();
+    toast("Аудио грузится из: " + assetBase);
+  }
+  ab.addEventListener("change", ()=> applyAssetBase(ab.value));
+  ab.addEventListener("keydown", (e)=>{ if (e.key === "Enter"){ ab.blur(); } });
+  document.getElementById("assetReset").addEventListener("click", ()=>{
+    ab.value = ""; applyAssetBase("");
+  });
+
+  document.getElementById("btnExport").addEventListener("click", ()=>{
+    const out = [];
+    for (const r of DATA){
+      const rt = ratings[key(r)];
+      if (rt) out.push({engine:r.engine, lang:r.lang, device:r.device, rating:rt, rtf:r.rtf, file:r.file});
+    }
+    out.sort((a,b)=> b.rating-a.rating || (a.rtf||9)-(b.rtf||9));
+    const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "tts_ratings.json";
+    a.click();
+    toast("Скачано оценок: "+out.length);
+  });
+}
+
+// star clicks (delegated)
+document.getElementById("tbody").addEventListener("click", (e)=>{
+  const st = e.target.closest(".star");
+  if (!st) return;
+  const wrap = st.closest(".stars");
+  const k = wrap.dataset.key;
+  const v = parseInt(st.dataset.v,10);
+  const cur = ratings[k]||0;
+  if (cur === v){ delete ratings[k]; } else { ratings[k]=v; }
+  saveRatings(); render();
+});
+// star hover preview (delegated)
+document.getElementById("tbody").addEventListener("mouseover", (e)=>{
+  const st = e.target.closest(".star"); if(!st) return;
+  const wrap = st.closest(".stars"); const v = parseInt(st.dataset.v,10);
+  wrap.querySelectorAll(".star").forEach((s,i)=> s.classList.toggle("hover", i<v));
+});
+document.getElementById("tbody").addEventListener("mouseout", (e)=>{
+  const wrap = e.target.closest(".stars"); if(!wrap) return;
+  wrap.querySelectorAll(".star").forEach(s=>s.classList.remove("hover"));
+});
+
+bindFilters();
+render();
+
+// Keep sticky table header offset in sync with actual sticky-top height (assetbar + toolbar, handles wrap)
+function syncHeaderOffset(){
+  const st = document.querySelector(".sticky-top");
+  if (st) document.documentElement.style.setProperty("--tb-h", st.offsetHeight + "px");
+}
+syncHeaderOffset();
+window.addEventListener("resize", syncHeaderOffset);
+if (window.ResizeObserver){ const st=document.querySelector(".sticky-top"); if(st) new ResizeObserver(syncHeaderOffset).observe(st); }
+
+// ---- single playback: starting any audio pauses all others ----
+document.addEventListener("play", function(e){
+  const t = e.target;
+  if (t && t.tagName === "AUDIO"){
+    document.querySelectorAll("audio").forEach(a => { if (a !== t){ try{ a.pause(); }catch(_){} } });
+  }
+}, true);
+</script>
+</body>
+</html>

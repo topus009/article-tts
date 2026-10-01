@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTS Engine Benchmark — CPU & GPU</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 20px;
+    line-height: 1.5;
+}
+h1 {
+    text-align: center;
+    color: #58a6ff;
+    margin-bottom: 4px;
+    font-size: 1.8em;
+}
+.subtitle {
+    text-align: center;
+    color: #8b949e;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+}
+.stats {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.stat-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 140px;
+}
+.stat-card .value {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #58a6ff;
+}
+.stat-card .label {
+    font-size: 0.8em;
+    color: #8b949e;
+}
+.info-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.info-box h3 { color: #58a6ff; margin-bottom: 8px; font-size: 1em; }
+.info-box p { color: #8b949e; font-size: 0.9em; margin-bottom: 6px; }
+.legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+}
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+.legend-dot.fast { background: #238636; }
+.legend-dot.medium { background: #9e6a03; }
+.legend-dot.slow { background: #da3633; }
+.legend-dot.veryslow { background: #6e40aa; }
+.table-wrapper {
+    border-radius: 8px;
+    border: 1px solid #30363d;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #161b22;
+    min-width: 700px;
+}
+thead th {
+    background: #21262d;
+    color: #58a6ff;
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #30363d;
+    font-size: 0.9em;
+    position: sticky;
+    top: var(--ab-h, 0px);
+    z-index: 10;
+}
+thead tr:first-child th {
+    border-bottom: 1px solid #30363d;
+}
+thead tr:nth-child(2) th {
+    font-size: 0.75em;
+    color: #8b949e;
+    padding: 4px;
+    border-bottom: 2px solid #30363d;
+}
+.engine-name {
+    font-weight: 600;
+    color: #f0f6fc;
+    padding: 10px 12px;
+    white-space: nowrap;
+    background: #161b22;
+    border-right: 1px solid #30363d;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+}
+td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #21262d;
+    text-align: center;
+    vertical-align: middle;
+}
+tr:hover td {
+    background: #1c2128;
+}
+tr:hover .engine-name {
+    background: #1c2128;
+}
+.result-cell {
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 0.85em;
+}
+.result-cell.fast { background: rgba(35,134,54,0.2); }
+.result-cell.medium { background: rgba(158,106,3,0.2); }
+.result-cell.slow { background: rgba(218,54,51,0.15); }
+.result-cell.veryslow { background: rgba(110,64,170,0.15); }
+.gen-time { color: #f0f6fc; font-weight: 600; }
+.audio-dur { color: #8b949e; }
+.rtf { color: #58a6ff; font-size: 0.9em; font-weight: 600; }
+.audio-cell {
+    min-width: 200px;
+}
+audio {
+    width: 100%;
+    max-width: 220px;
+    height: 28px;
+    border-radius: 4px;
+}
+.na { color: #484f58; font-size: 0.9em; }
+.error {
+    color: #f85149;
+    font-weight: 600;
+    font-size: 0.85em;
+    cursor: help;
+}
+.error-detail {
+    color: #6e7681;
+    font-size: 0.75em;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+footer {
+    text-align: center;
+    color: #484f58;
+    margin-top: 24px;
+    font-size: 0.85em;
+}
+footer a { color: #58a6ff; text-decoration: none; }
+.assetbar {
+    position: sticky; top: 0; z-index: 60;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    background: rgba(13,17,23,0.97); backdrop-filter: blur(8px);
+    border: 1px solid #30363d; border-radius: 8px;
+    padding: 10px 14px; margin: 0 auto 18px; max-width: 1100px;
+}
+.assetbar label { font-size: 0.85em; color: #79c0ff; font-weight: 600; white-space: nowrap; }
+.assetbar input[type=text] {
+    flex: 1; min-width: 220px; max-width: 520px;
+    background: #1c2128; color: #c9d1d9; border: 1px solid #30363d;
+    border-radius: 6px; padding: 6px 10px; font-size: 0.85em;
+    font-family: ui-monospace, monospace; outline: none;
+}
+.assetbar input[type=text]:focus { border-color: #58a6ff; }
+.assetbar button {
+    background: #1c2128; color: #c9d1d9; border: 1px solid #30363d;
+    border-radius: 6px; padding: 6px 12px; font-size: 0.82em; cursor: pointer;
+}
+.assetbar button:hover { border-color: #58a6ff; color: #79c0ff; }
+.assetbar .hint { font-size: 0.72em; color: #8b949e; }
+.v2link { font-size: 0.8em; color: #8b949e; text-align: center; margin-bottom: 14px; }
+.v2link a { color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>TTS Engine Benchmark</h1>
+<p class="subtitle">
+    Text-to-Speech engines comparison &mdash; speed, quality &amp; language support
+</p>
+<p class="v2link">💡 Есть <a href="benchmark_report_v2.html">интерактивная версия v2</a> — фильтры, сортировка, оценки ★</p>
+
+<div class="assetbar">
+    <label for="assetBase">📁 Папка аудио:</label>
+    <input type="text" id="assetBase" placeholder="benchmark_output/" spellcheck="false">
+    <button id="assetReset" title="Сбросить на benchmark_output/">↺</button>
+    <span class="hint">URL или путь, откуда грузить .wav (по умолчанию <code>benchmark_output/</code>). Сохраняется в браузере.</span>
+</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="value">48</div>
+        <div class="label">Engines working</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">26</div>
+        <div class="label">Errors / skipped</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">sherpa-onnx</div>
+        <div class="label">Fastest (RTF 0.07)</div>
+    </div>
+    <div class="stat-card">
+        <div class="value">GTX 1650 Ti</div>
+        <div class="label">GPU (4GB VRAM)</div>
+    </div>
+</div>
+
+<div class="info-box">
+    <h3>How to read this table</h3>
+    <p><strong>Gen time</strong> = wall-clock seconds to synthesize the text.</p>
+    <p><strong>Audio duration</strong> = length of the resulting speech.</p>
+    <p><strong>RTF (Real-Time Factor)</strong> = gen_time / audio_duration. <strong>Lower is better.</strong> RTF &lt; 1.0 means faster than real-time.</p>
+    <p>Listen to the audio samples to compare quality across engines and languages.</p>
+</div>
+
+<div class="legend">
+    <div class="legend-item"><div class="legend-dot fast"></div> RTF &lt; 0.5 (very fast)</div>
+    <div class="legend-item"><div class="legend-dot medium"></div> RTF 0.5–1.0 (real-time)</div>
+    <div class="legend-item"><div class="legend-dot slow"></div> RTF 1.0–3.0 (slow)</div>
+    <div class="legend-item"><div class="legend-dot veryslow"></div> RTF &gt; 3.0 (very slow)</div>
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+    <th rowspan="2">Engine</th>
+    <th colspan="2">English (CPU)</th><th colspan="2">Russian (CPU)</th><th colspan="2">English (GPU)</th><th colspan="2">Russian (GPU)</th>
+</tr>
+<tr>
+    <th>Speed</th><th>Audio</th><th>Speed</th><th>Audio</th><th>Speed</th><th>Audio</th><th>Speed</th><th>Audio</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="engine-name">Bark</td><td><div class="result-cell veryslow"><span class="gen-time">142.7s</span> gen<br><span class="audio-dur">13.9s</span> audio<br><span class="rtf">RTF: 10.25x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Bark_en_cpu.wav" data-file="Bark_en_cpu.wav" type="audio/wav"></audio></td><td class="error" title="  3%|▎         | 1/35 [00:01<01:07,  1.98s/it]">ERR</td><td class="error-detail">  3%|▎         | 1/35 [00:01<01:07,  1.9</td><td><div class="result-cell slow"><span class="gen-time">35.6s</span> gen<br><span class="audio-dur">13.9s</span> audio<br><span class="rtf">RTF: 2.56x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Bark_en_cuda.wav" data-file="Bark_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell slow"><span class="gen-time">25.0s</span> gen<br><span class="audio-dur">11.1s</span> audio<br><span class="rtf">RTF: 2.24x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Bark_ru_cuda.wav" data-file="Bark_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">Chatterbox</td><td><div class="result-cell veryslow"><span class="gen-time">271.4s</span> gen<br><span class="audio-dur">37.0s</span> audio<br><span class="rtf">RTF: 7.34x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Chatterbox_en_cpu.wav" data-file="Chatterbox_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell veryslow"><span class="gen-time">207.2s</span> gen<br><span class="audio-dur">28.2s</span> audio<br><span class="rtf">RTF: 7.36x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Chatterbox_ru_cpu.wav" data-file="Chatterbox_ru_cpu.wav" type="audio/wav"></audio></td><td class="error" title="torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 24.19 MiB is free. Including ">ERR</td><td class="error-detail">torch.OutOfMemoryError: CUDA out of memo</td><td class="error" title="torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 12.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 20.19 MiB is free. Including ">ERR</td><td class="error-detail">torch.OutOfMemoryError: CUDA out of memo</td></tr><tr><td class="engine-name">CosyVoice</td><td class="error" title="unknown">ERR</td><td class="error-detail">unknown</td><td class="error" title="2026-10-01 22:11:21,898 INFO building fst for zh_normalizer ...">ERR</td><td class="error-detail">2026-10-01 22:11:21,898 INFO building fs</td><td><div class="result-cell slow"><span class="gen-time">62.7s</span> gen<br><span class="audio-dur">47.1s</span> audio<br><span class="rtf">RTF: 1.33x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/CosyVoice_en_cuda.wav" data-file="CosyVoice_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell slow"><span class="gen-time">82.7s</span> gen<br><span class="audio-dur">73.0s</span> audio<br><span class="rtf">RTF: 1.13x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/CosyVoice_ru_cuda.wav" data-file="CosyVoice_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">DIA</td><td class="error" title="unknown">ERR</td><td class="error-detail">unknown</td><td class="na">—</td><td class="na">—</td><td class="error" title="torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 10.62 MiB is free. Including ">ERR</td><td class="error-detail">torch.OutOfMemoryError: CUDA out of memo</td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">F5-TTS</td><td class="error" title="unknown">ERR</td><td class="error-detail">unknown</td><td class="error" title="unknown">ERR</td><td class="error-detail">unknown</td><td><div class="result-cell veryslow"><span class="gen-time">692.9s</span> gen<br><span class="audio-dur">71.9s</span> audio<br><span class="rtf">RTF: 9.63x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/F5-TTS_en_cuda.wav" data-file="F5-TTS_en_cuda.wav" type="audio/wav"></audio></td><td class="error" title="timeout (1200s)">ERR</td><td class="error-detail">timeout (1200s)</td></tr><tr><td class="engine-name">Kokoro</td><td><div class="result-cell medium"><span class="gen-time">24.7s</span> gen<br><span class="audio-dur">49.3s</span> audio<br><span class="rtf">RTF: 0.50x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Kokoro_en_cpu.wav" data-file="Kokoro_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">48.7s</span> gen<br><span class="audio-dur">113.5s</span> audio<br><span class="rtf">RTF: 0.43x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Kokoro_ru_cpu.wav" data-file="Kokoro_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">8.8s</span> gen<br><span class="audio-dur">49.3s</span> audio<br><span class="rtf">RTF: 0.18x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Kokoro_en_cuda.wav" data-file="Kokoro_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">9.5s</span> gen<br><span class="audio-dur">113.5s</span> audio<br><span class="rtf">RTF: 0.08x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Kokoro_ru_cuda.wav" data-file="Kokoro_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">MARS5</td><td class="error" title="ModuleNotFoundError: No module named 'mars5'">ERR</td><td class="error-detail">ModuleNotFoundError: No module named 'ma</td><td class="na">—</td><td class="na">—</td><td class="error" title="ModuleNotFoundError: No module named 'mars5'">ERR</td><td class="error-detail">ModuleNotFoundError: No module named 'ma</td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">MMS</td><td><div class="result-cell fast"><span class="gen-time">17.5s</span> gen<br><span class="audio-dur">47.6s</span> audio<br><span class="rtf">RTF: 0.37x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/MMS_en_cpu.wav" data-file="MMS_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">20.1s</span> gen<br><span class="audio-dur">56.9s</span> audio<br><span class="rtf">RTF: 0.35x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/MMS_ru_cpu.wav" data-file="MMS_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">5.3s</span> gen<br><span class="audio-dur">47.0s</span> audio<br><span class="rtf">RTF: 0.11x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/MMS_en_cuda.wav" data-file="MMS_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">4.9s</span> gen<br><span class="audio-dur">56.6s</span> audio<br><span class="rtf">RTF: 0.09x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/MMS_ru_cuda.wav" data-file="MMS_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">Maha TTS</td><td class="error" title=" 18%|█▊        | 178/1000 [01:37<08:08,  1.68it/s]">ERR</td><td class="error-detail"> 18%|█▊        | 178/1000 [01:37<08:08, </td><td class="na">—</td><td class="na">—</td><td><div class="result-cell veryslow"><span class="gen-time">314.2s</span> gen<br><span class="audio-dur">20.0s</span> audio<br><span class="rtf">RTF: 15.73x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Maha_TTS_en_cuda.wav" data-file="Maha_TTS_en_cuda.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">MeloTTS</td><td><div class="result-cell medium"><span class="gen-time">38.8s</span> gen<br><span class="audio-dur">48.1s</span> audio<br><span class="rtf">RTF: 0.81x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/MeloTTS_en_cpu.wav" data-file="MeloTTS_en_cpu.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td><td><div class="result-cell fast"><span class="gen-time">17.9s</span> gen<br><span class="audio-dur">48.4s</span> audio<br><span class="rtf">RTF: 0.37x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/MeloTTS_en_cuda.wav" data-file="MeloTTS_en_cuda.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">Moss-TTS</td><td><div class="result-cell veryslow"><span class="gen-time">622.9s</span> gen<br><span class="audio-dur">60.0s</span> audio<br><span class="rtf">RTF: 10.38x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Moss-TTS_en_cpu.wav" data-file="Moss-TTS_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell veryslow"><span class="gen-time">856.9s</span> gen<br><span class="audio-dur">60.0s</span> audio<br><span class="rtf">RTF: 14.28x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Moss-TTS_ru_cpu.wav" data-file="Moss-TTS_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell medium"><span class="gen-time">33.3s</span> gen<br><span class="audio-dur">60.0s</span> audio<br><span class="rtf">RTF: 0.55x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Moss-TTS_en_cuda.wav" data-file="Moss-TTS_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell medium"><span class="gen-time">33.0s</span> gen<br><span class="audio-dur">60.0s</span> audio<br><span class="rtf">RTF: 0.55x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Moss-TTS_ru_cuda.wav" data-file="Moss-TTS_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">OmniVoice</td><td><div class="result-cell veryslow"><span class="gen-time">170.7s</span> gen<br><span class="audio-dur">48.2s</span> audio<br><span class="rtf">RTF: 3.54x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/OmniVoice_en_cpu.wav" data-file="OmniVoice_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell veryslow"><span class="gen-time">173.6s</span> gen<br><span class="audio-dur">48.1s</span> audio<br><span class="rtf">RTF: 3.61x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/OmniVoice_ru_cpu.wav" data-file="OmniVoice_ru_cpu.wav" type="audio/wav"></audio></td><td class="error" title="ModuleNotFoundError: Could not import module 'PreTrainedModel'. Are this object's requirements defined correctly?">ERR</td><td class="error-detail">ModuleNotFoundError: Could not import mo</td><td class="error" title="ModuleNotFoundError: Could not import module 'PreTrainedModel'. Are this object's requirements defined correctly?">ERR</td><td class="error-detail">ModuleNotFoundError: Could not import mo</td></tr><tr><td class="engine-name">Parler TTS</td><td><div class="result-cell veryslow"><span class="gen-time">590.9s</span> gen<br><span class="audio-dur">54.3s</span> audio<br><span class="rtf">RTF: 10.89x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Parler_TTS_en_cpu.wav" data-file="Parler_TTS_en_cpu.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td><td><div class="result-cell slow"><span class="gen-time">116.9s</span> gen<br><span class="audio-dur">58.9s</span> audio<br><span class="rtf">RTF: 1.99x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Parler_TTS_en_cuda.wav" data-file="Parler_TTS_en_cuda.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">Piper</td><td><div class="result-cell fast"><span class="gen-time">4.0s</span> gen<br><span class="audio-dur">49.1s</span> audio<br><span class="rtf">RTF: 0.08x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Piper_en_cpu.wav" data-file="Piper_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">4.3s</span> gen<br><span class="audio-dur">57.6s</span> audio<br><span class="rtf">RTF: 0.07x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Piper_ru_cpu.wav" data-file="Piper_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">4.0s</span> gen<br><span class="audio-dur">49.6s</span> audio<br><span class="rtf">RTF: 0.08x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Piper_en_cuda.wav" data-file="Piper_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">4.4s</span> gen<br><span class="audio-dur">57.5s</span> audio<br><span class="rtf">RTF: 0.08x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Piper_ru_cuda.wav" data-file="Piper_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">SeamlessM4T</td><td class="error" title="ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str">ERR</td><td class="error-detail">ValueError: Unrecognized model in facebo</td><td class="error" title="ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str">ERR</td><td class="error-detail">ValueError: Unrecognized model in facebo</td><td class="error" title="ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str">ERR</td><td class="error-detail">ValueError: Unrecognized model in facebo</td><td class="error" title="ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str">ERR</td><td class="error-detail">ValueError: Unrecognized model in facebo</td></tr><tr><td class="engine-name">StyleTTS2</td><td><div class="result-cell veryslow"><span class="gen-time">308.9s</span> gen<br><span class="audio-dur">55.2s</span> audio<br><span class="rtf">RTF: 5.60x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/StyleTTS2_en_cpu.wav" data-file="StyleTTS2_en_cpu.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td><td><div class="result-cell fast"><span class="gen-time">26.9s</span> gen<br><span class="audio-dur">56.3s</span> audio<br><span class="rtf">RTF: 0.48x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/StyleTTS2_en_cuda.wav" data-file="StyleTTS2_en_cuda.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">Supertonic</td><td><div class="result-cell fast"><span class="gen-time">22.4s</span> gen<br><span class="audio-dur">49.1s</span> audio<br><span class="rtf">RTF: 0.46x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Supertonic_en_cpu.wav" data-file="Supertonic_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell medium"><span class="gen-time">29.2s</span> gen<br><span class="audio-dur">50.9s</span> audio<br><span class="rtf">RTF: 0.57x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Supertonic_ru_cpu.wav" data-file="Supertonic_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">22.4s</span> gen<br><span class="audio-dur">49.1s</span> audio<br><span class="rtf">RTF: 0.46x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Supertonic_en_cuda.wav" data-file="Supertonic_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">21.7s</span> gen<br><span class="audio-dur">50.9s</span> audio<br><span class="rtf">RTF: 0.43x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Supertonic_ru_cuda.wav" data-file="Supertonic_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">Vall-E X</td><td class="error" title="unknown">ERR</td><td class="error-detail">unknown</td><td class="na">—</td><td class="na">—</td><td><div class="result-cell medium"><span class="gen-time">51.8s</span> gen<br><span class="audio-dur">57.8s</span> audio<br><span class="rtf">RTF: 0.90x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Vall-E_X_en_cuda.wav" data-file="Vall-E_X_en_cuda.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">Vosk-TTS</td><td class="na">—</td><td class="na">—</td><td><div class="result-cell slow"><span class="gen-time">82.9s</span> gen<br><span class="audio-dur">55.7s</span> audio<br><span class="rtf">RTF: 1.49x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Vosk-TTS_ru_cpu.wav" data-file="Vosk-TTS_ru_cpu.wav" type="audio/wav"></audio></td><td class="na">—</td><td class="na">—</td><td><div class="result-cell slow"><span class="gen-time">86.6s</span> gen<br><span class="audio-dur">55.7s</span> audio<br><span class="rtf">RTF: 1.55x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/Vosk-TTS_ru_cuda.wav" data-file="Vosk-TTS_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">VoxCPM</td><td class="error" title=" 11%|█▏        | 100/886 [04:36<33:57,  2.59s/it]">ERR</td><td class="error-detail"> 11%|█▏        | 100/886 [04:36<33:57,  </td><td class="error" title="100%|██████████| 10/10 [00:26<00:00,  2.65s/it]">ERR</td><td class="error-detail">100%|██████████| 10/10 [00:26<00:00,  2.</td><td class="error" title="torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 16.75 MiB is free. Including ">ERR</td><td class="error-detail">torch.OutOfMemoryError: CUDA out of memo</td><td class="error" title="torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 16.75 MiB is free. Including ">ERR</td><td class="error-detail">torch.OutOfMemoryError: CUDA out of memo</td></tr><tr><td class="engine-name">XTTS</td><td><div class="result-cell veryslow"><span class="gen-time">149.5s</span> gen<br><span class="audio-dur">49.6s</span> audio<br><span class="rtf">RTF: 3.01x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/XTTS_en_cpu.wav" data-file="XTTS_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell veryslow"><span class="gen-time">160.2s</span> gen<br><span class="audio-dur">52.8s</span> audio<br><span class="rtf">RTF: 3.03x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/XTTS_ru_cpu.wav" data-file="XTTS_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell medium"><span class="gen-time">42.6s</span> gen<br><span class="audio-dur">51.8s</span> audio<br><span class="rtf">RTF: 0.82x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/XTTS_en_cuda.wav" data-file="XTTS_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell medium"><span class="gen-time">40.9s</span> gen<br><span class="audio-dur">54.0s</span> audio<br><span class="rtf">RTF: 0.76x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/XTTS_ru_cuda.wav" data-file="XTTS_ru_cuda.wav" type="audio/wav"></audio></td></tr><tr><td class="engine-name">pocket-tts</td><td class="error" title="FileNotFoundError: Config file not found: /home/topus009/miniconda3/envs/tts-bench/lib/python3.10/site-packages/pocket_tts/config/en.yaml. Did you mak">ERR</td><td class="error-detail">FileNotFoundError: Config file not found</td><td class="na">—</td><td class="na">—</td><td class="error" title="FileNotFoundError: Config file not found: /home/topus009/miniconda3/envs/tts-bench/lib/python3.10/site-packages/pocket_tts/config/en.yaml. Did you mak">ERR</td><td class="error-detail">FileNotFoundError: Config file not found</td><td class="na">—</td><td class="na">—</td></tr><tr><td class="engine-name">sherpa-onnx</td><td><div class="result-cell fast"><span class="gen-time">12.2s</span> gen<br><span class="audio-dur">38.7s</span> audio<br><span class="rtf">RTF: 0.32x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/sherpa-onnx_en_cpu.wav" data-file="sherpa-onnx_en_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">3.4s</span> gen<br><span class="audio-dur">46.4s</span> audio<br><span class="rtf">RTF: 0.07x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/sherpa-onnx_ru_cpu.wav" data-file="sherpa-onnx_ru_cpu.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">12.3s</span> gen<br><span class="audio-dur">38.9s</span> audio<br><span class="rtf">RTF: 0.32x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/sherpa-onnx_en_cuda.wav" data-file="sherpa-onnx_en_cuda.wav" type="audio/wav"></audio></td><td><div class="result-cell fast"><span class="gen-time">3.3s</span> gen<br><span class="audio-dur">45.4s</span> audio<br><span class="rtf">RTF: 0.07x</span></div></td><td class="audio-cell"><audio controls preload="none"><source src="benchmark_output/sherpa-onnx_ru_cuda.wav" data-file="sherpa-onnx_ru_cuda.wav" type="audio/wav"></audio></td></tr>
+</tbody>
+</table>
+</div>
+
+<footer>
+    Generated by TTS Benchmark &bull; GPU: NVIDIA GTX 1650 Ti (4GB) &bull; CPU: 12 cores &bull; RAM: 30GB<br>
+    Powered by <a href="https://github.com/rsxdalv/TTS-WebUI" target="_blank">TTS-WebUI</a>
+</footer>
+
+<script>
+(function(){
+  var LS = "tts_v1_assetbase";
+  var DEF = "benchmark_output/";
+  function norm(b){ b=(b||"").trim(); if(!b) return DEF; if(!b.endsWith("/")) b+="/"; return b; }
+  var base = DEF;
+  try { var s = localStorage.getItem(LS); if (s!==null) base = norm(s); } catch(e){}
+  function applyBase(){
+    document.querySelectorAll("audio source[data-file]").forEach(function(src){
+      var newSrc = base + src.getAttribute("data-file");
+      if (src.getAttribute("src") !== newSrc){
+        src.setAttribute("src", newSrc);
+        var a = src.closest("audio"); if(a){ try{ a.load(); }catch(_){} }
+      }
+    });
+  }
+  var inp = document.getElementById("assetBase");
+  if (inp){
+    inp.value = (base===DEF)?"":base;
+    inp.addEventListener("change", function(){
+      base = norm(inp.value);
+      try{ localStorage.setItem(LS, base); }catch(e){}
+      applyBase();
+    });
+    inp.addEventListener("keydown", function(e){ if(e.key==="Enter") inp.blur(); });
+  }
+  var rst = document.getElementById("assetReset");
+  if (rst) rst.addEventListener("click", function(){ if(inp){inp.value="";} base=DEF; try{localStorage.removeItem(LS);}catch(e){} applyBase(); });
+  applyBase();
+  // keep sticky <thead> offset below the sticky assetbar
+  function syncHead(){
+    var ab = document.querySelector(".assetbar");
+    if (ab) document.documentElement.style.setProperty("--ab-h", ab.offsetHeight + "px");
+  }
+  syncHead();
+  window.addEventListener("resize", syncHead);
+  if (window.ResizeObserver){ var ab=document.querySelector(".assetbar"); if(ab) new ResizeObserver(syncHead).observe(ab); }
+  // single playback: starting any audio pauses all others
+  document.addEventListener("play", function(e){
+    var t=e.target;
+    if(t && t.tagName==="AUDIO"){
+      document.querySelectorAll("audio").forEach(function(a){ if(a!==t){ try{a.pause();}catch(_){} } });
+    }
+  }, true);
+})();
+</script>
+
+</body>
+</html>
