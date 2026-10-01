@@ -1,0 +1,23 @@
+Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  CPU
+============================================================
+  SKIP Kokoro en cpu
+  SKIP Kokoro ru cpu
+  SKIP MMS en cpu
+  SKIP MMS ru cpu
+  RUN  Piper en cpu...
+       OK gen=2.2s dur=13.7s RTF=0.16
+  RUN  Piper ru cpu...
+       OK gen=2.2s dur=16.5s RTF=0.13
+  RUN  Bark en cpu...
+       FAIL: EOFError: Ran out of input
+  RUN  Bark ru cpu...
+       FAIL: EOFError: Ran out of input
+  RUN  SeamlessM4T en cpu...
+       FAIL: ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `m
+  RUN  SeamlessM4T ru cpu...
+       FAIL: ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `m
+  RUN  Maha TTS en cpu...

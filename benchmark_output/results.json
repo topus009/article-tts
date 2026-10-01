@@ -1,0 +1,742 @@
+[
+  {
+    "engine": "Kokoro",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 24.671,
+    "audio_dur": 49.3,
+    "rtf": 0.5004,
+    "file": "Kokoro_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Kokoro",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 48.671,
+    "audio_dur": 113.55,
+    "rtf": 0.4286,
+    "file": "Kokoro_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "MMS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 17.536,
+    "audio_dur": 47.552,
+    "rtf": 0.3688,
+    "file": "MMS_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "MMS",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 20.067,
+    "audio_dur": 56.864,
+    "rtf": 0.3529,
+    "file": "MMS_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Piper",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 3.972,
+    "audio_dur": 49.052,
+    "rtf": 0.081,
+    "file": "Piper_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Piper",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 4.313,
+    "audio_dur": 57.585,
+    "rtf": 0.0749,
+    "file": "Piper_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "SeamlessM4T",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str"
+  },
+  {
+    "engine": "SeamlessM4T",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str"
+  },
+  {
+    "engine": "DIA",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "unknown"
+  },
+  {
+    "engine": "MARS5",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ModuleNotFoundError: No module named 'mars5'"
+  },
+  {
+    "engine": "Kokoro",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 8.817,
+    "audio_dur": 49.3,
+    "rtf": 0.1788,
+    "file": "Kokoro_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Kokoro",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 9.451,
+    "audio_dur": 113.55,
+    "rtf": 0.0832,
+    "file": "Kokoro_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "MMS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 5.317,
+    "audio_dur": 46.992,
+    "rtf": 0.1131,
+    "file": "MMS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "MMS",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 4.894,
+    "audio_dur": 56.56,
+    "rtf": 0.0865,
+    "file": "MMS_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Piper",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 3.992,
+    "audio_dur": 49.644,
+    "rtf": 0.0804,
+    "file": "Piper_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Piper",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 4.406,
+    "audio_dur": 57.458,
+    "rtf": 0.0767,
+    "file": "Piper_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "SeamlessM4T",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str"
+  },
+  {
+    "engine": "SeamlessM4T",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str"
+  },
+  {
+    "engine": "DIA",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 10.62 MiB is free. Including "
+  },
+  {
+    "engine": "MARS5",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ModuleNotFoundError: No module named 'mars5'"
+  },
+  {
+    "engine": "Supertonic",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 22.4,
+    "audio_dur": 49.1,
+    "rtf": 0.46,
+    "file": "Supertonic_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Supertonic",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 29.2,
+    "audio_dur": 50.9,
+    "rtf": 0.57,
+    "file": "Supertonic_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Supertonic",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 22.4,
+    "audio_dur": 49.1,
+    "rtf": 0.46,
+    "file": "Supertonic_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Supertonic",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 21.7,
+    "audio_dur": 50.9,
+    "rtf": 0.43,
+    "file": "Supertonic_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "OmniVoice",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 170.7,
+    "audio_dur": 48.2,
+    "rtf": 3.54,
+    "file": "OmniVoice_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "OmniVoice",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 173.6,
+    "audio_dur": 48.1,
+    "rtf": 3.61,
+    "file": "OmniVoice_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "pocket-tts",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "FileNotFoundError: Config file not found: /home/topus009/miniconda3/envs/tts-bench/lib/python3.10/site-packages/pocket_tts/config/en.yaml. Did you mak"
+  },
+  {
+    "engine": "sherpa-onnx",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 12.21,
+    "audio_dur": 38.684,
+    "rtf": 0.3156,
+    "file": "sherpa-onnx_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "sherpa-onnx",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 3.395,
+    "audio_dur": 46.449,
+    "rtf": 0.0731,
+    "file": "sherpa-onnx_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "pocket-tts",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "FileNotFoundError: Config file not found: /home/topus009/miniconda3/envs/tts-bench/lib/python3.10/site-packages/pocket_tts/config/en.yaml. Did you mak"
+  },
+  {
+    "engine": "sherpa-onnx",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 12.252,
+    "audio_dur": 38.87,
+    "rtf": 0.3152,
+    "file": "sherpa-onnx_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "sherpa-onnx",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 3.325,
+    "audio_dur": 45.397,
+    "rtf": 0.0732,
+    "file": "sherpa-onnx_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "OmniVoice",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ModuleNotFoundError: Could not import module 'PreTrainedModel'. Are this object's requirements defined correctly?"
+  },
+  {
+    "engine": "OmniVoice",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "ModuleNotFoundError: Could not import module 'PreTrainedModel'. Are this object's requirements defined correctly?"
+  },
+  {
+    "engine": "Chatterbox",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 271.402,
+    "audio_dur": 36.96,
+    "rtf": 7.3431,
+    "file": "Chatterbox_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Chatterbox",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 24.19 MiB is free. Including "
+  },
+  {
+    "engine": "Vosk-TTS",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 82.909,
+    "audio_dur": 55.693,
+    "rtf": 1.4887,
+    "file": "Vosk-TTS_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Chatterbox",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 207.165,
+    "audio_dur": 28.16,
+    "rtf": 7.3567,
+    "file": "Chatterbox_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Vosk-TTS",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 86.567,
+    "audio_dur": 55.693,
+    "rtf": 1.5544,
+    "file": "Vosk-TTS_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Chatterbox",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 12.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 20.19 MiB is free. Including "
+  },
+  {
+    "engine": "MeloTTS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 38.8,
+    "audio_dur": 48.1,
+    "rtf": 0.81,
+    "file": "MeloTTS_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Moss-TTS",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 856.882,
+    "audio_dur": 60.0,
+    "rtf": 14.2814,
+    "file": "Moss-TTS_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Moss-TTS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 622.94,
+    "audio_dur": 60.0,
+    "rtf": 10.3823,
+    "file": "Moss-TTS_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "StyleTTS2",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 308.9,
+    "audio_dur": 55.2,
+    "rtf": 5.6,
+    "file": "StyleTTS2_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "MeloTTS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 17.857,
+    "audio_dur": 48.378,
+    "rtf": 0.3691,
+    "file": "MeloTTS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Moss-TTS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 33.262,
+    "audio_dur": 60.0,
+    "rtf": 0.5544,
+    "file": "Moss-TTS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Moss-TTS",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 32.966,
+    "audio_dur": 60.0,
+    "rtf": 0.5494,
+    "file": "Moss-TTS_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "VoxCPM",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 16.75 MiB is free. Including "
+  },
+  {
+    "engine": "VoxCPM",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 3.63 GiB of which 16.75 MiB is free. Including "
+  },
+  {
+    "engine": "Bark",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 35.645,
+    "audio_dur": 13.947,
+    "rtf": 2.5558,
+    "file": "Bark_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Bark",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 24.981,
+    "audio_dur": 11.133,
+    "rtf": 2.2438,
+    "file": "Bark_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Maha TTS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 314.21,
+    "audio_dur": 19.981,
+    "rtf": 15.7256,
+    "file": "Maha_TTS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "F5-TTS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 692.869,
+    "audio_dur": 71.923,
+    "rtf": 9.6335,
+    "file": "F5-TTS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "F5-TTS",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "timeout (1200s)"
+  },
+  {
+    "engine": "StyleTTS2",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 26.946,
+    "audio_dur": 56.279,
+    "rtf": 0.4788,
+    "file": "StyleTTS2_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Parler TTS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 116.864,
+    "audio_dur": 58.871,
+    "rtf": 1.9851,
+    "file": "Parler_TTS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Vall-E X",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 51.841,
+    "audio_dur": 57.76,
+    "rtf": 0.8975,
+    "file": "Vall-E_X_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "XTTS",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 42.634,
+    "audio_dur": 51.771,
+    "rtf": 0.8235,
+    "file": "XTTS_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "XTTS",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 40.925,
+    "audio_dur": 53.99,
+    "rtf": 0.758,
+    "file": "XTTS_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "CosyVoice",
+    "lang": "en",
+    "device": "cuda",
+    "gen_time": 62.683,
+    "audio_dur": 47.08,
+    "rtf": 1.3314,
+    "file": "CosyVoice_en_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "CosyVoice",
+    "lang": "ru",
+    "device": "cuda",
+    "gen_time": 82.671,
+    "audio_dur": 73.0,
+    "rtf": 1.1325,
+    "file": "CosyVoice_ru_cuda.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "VoxCPM",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": " 11%|█▏        | 100/886 [04:36<33:57,  2.59s/it]"
+  },
+  {
+    "engine": "VoxCPM",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "100%|██████████| 10/10 [00:26<00:00,  2.65s/it]"
+  },
+  {
+    "engine": "Bark",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 142.671,
+    "audio_dur": 13.92,
+    "rtf": 10.2494,
+    "file": "Bark_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Bark",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "  3%|▎         | 1/35 [00:01<01:07,  1.98s/it]"
+  },
+  {
+    "engine": "Maha TTS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": " 18%|█▊        | 178/1000 [01:37<08:08,  1.68it/s]"
+  },
+  {
+    "engine": "F5-TTS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "unknown"
+  },
+  {
+    "engine": "F5-TTS",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "unknown"
+  },
+  {
+    "engine": "Parler TTS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 590.916,
+    "audio_dur": 54.262,
+    "rtf": 10.89,
+    "file": "Parler_TTS_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "Vall-E X",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "unknown"
+  },
+  {
+    "engine": "XTTS",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": 149.501,
+    "audio_dur": 49.627,
+    "rtf": 3.0125,
+    "file": "XTTS_en_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "XTTS",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": 160.187,
+    "audio_dur": 52.838,
+    "rtf": 3.0317,
+    "file": "XTTS_ru_cpu.wav",
+    "status": "ok"
+  },
+  {
+    "engine": "CosyVoice",
+    "lang": "en",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "unknown"
+  },
+  {
+    "engine": "CosyVoice",
+    "lang": "ru",
+    "device": "cpu",
+    "gen_time": null,
+    "audio_dur": null,
+    "rtf": null,
+    "file": null,
+    "status": "2026-10-01 22:11:21,898 INFO building fst for zh_normalizer ..."
+  }
+]

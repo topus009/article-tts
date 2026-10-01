@@ -1,0 +1,86 @@
+Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  CPU
+============================================================
+  SKIP Kokoro en cpu
+  SKIP Kokoro ru cpu
+  SKIP MMS en cpu
+  SKIP MMS ru cpu
+  SKIP Piper en cpu
+  SKIP Piper ru cpu
+  RUN  sherpa-onnx en cpu...
+       FAIL: Invoked with: <sherpa_onnx.lib._sherpa_onnx.OfflineTts object at 0x7dd9bce454b0>
+  RUN  sherpa-onnx ru cpu...
+       FAIL: Invalid username or password.
+  SKIP Supertonic en cpu
+  SKIP Supertonic ru cpu
+  RUN  Silero en cpu...
+       FAIL: AssertionError: Incorrect language 'en' for this speaker, please specify 'ru'
+  RUN  Silero ru cpu...
+       FAIL: RuntimeError: forward() expected at most 2 argument(s) but received 4 argument(s
+  RUN  Vosk-TTS en cpu...
+       FAIL: unknown
+  RUN  Vosk-TTS ru cpu...
+       FAIL: onnxruntime.capi.onnxruntime_pybind11_state.NoSuchFile: [ONNXRuntimeError] : 3 :
+  SKIP Bark en cpu
+  SKIP Bark ru cpu
+  SKIP SeamlessM4T en cpu
+  SKIP SeamlessM4T ru cpu
+  SKIP Maha TTS en cpu
+  SKIP F5-TTS en cpu
+  SKIP F5-TTS ru cpu
+  SKIP StyleTTS2 en cpu
+  SKIP Chatterbox en cpu
+  SKIP Parler TTS en cpu
+  SKIP Vall-E X en cpu
+  SKIP XTTS en cpu
+  SKIP XTTS ru cpu
+  SKIP CosyVoice en cpu
+  SKIP CosyVoice ru cpu
+  SKIP DIA en cpu
+  SKIP MARS5 en cpu
+
+============================================================
+  CUDA
+============================================================
+  SKIP Kokoro en cuda
+  SKIP Kokoro ru cuda
+  SKIP MMS en cuda
+  SKIP MMS ru cuda
+  SKIP Piper en cuda
+  SKIP Piper ru cuda
+  RUN  sherpa-onnx en cuda...
+       FAIL: Invoked with: <sherpa_onnx.lib._sherpa_onnx.OfflineTts object at 0x7aeaca7754b0>
+  RUN  sherpa-onnx ru cuda...
+       FAIL: Invalid username or password.
+  SKIP Supertonic en cuda
+  SKIP Supertonic ru cuda
+  RUN  Silero en cuda...
+       FAIL: AssertionError: Incorrect language 'en' for this speaker, please specify 'ru'
+  RUN  Silero ru cuda...
+       FAIL: RuntimeError: forward() expected at most 2 argument(s) but received 4 argument(s
+  RUN  Vosk-TTS en cuda...
+       FAIL: unknown
+  RUN  Vosk-TTS ru cuda...
+       FAIL: onnxruntime.capi.onnxruntime_pybind11_state.NoSuchFile: [ONNXRuntimeError] : 3 :
+  SKIP Bark en cuda
+  SKIP Bark ru cuda
+  SKIP SeamlessM4T en cuda
+  SKIP SeamlessM4T ru cuda
+  SKIP Maha TTS en cuda
+  SKIP F5-TTS en cuda
+  SKIP F5-TTS ru cuda
+  SKIP StyleTTS2 en cuda
+  SKIP Chatterbox en cuda
+  SKIP Parler TTS en cuda
+  SKIP Vall-E X en cuda
+  SKIP XTTS en cuda
+  SKIP XTTS ru cuda
+  SKIP CosyVoice en cuda
+  SKIP CosyVoice ru cuda
+  SKIP DIA en cuda
+  SKIP MARS5 en cuda
+
+Done! 62 results in /home/topus009/projects/globas-tts/benchmark_output/results.json

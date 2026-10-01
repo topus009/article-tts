@@ -1,0 +1,116 @@
+Devices: ['cuda', 'cpu']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  CUDA
+============================================================
+  SKIP Kokoro en cuda
+  SKIP Kokoro ru cuda
+  SKIP MMS en cuda
+  SKIP MMS ru cuda
+  SKIP Piper en cuda
+  SKIP Piper ru cuda
+  RUN  MeloTTS en cuda...
+       OK gen=17.9s dur=48.4s RTF=0.37
+  RUN  Moss-TTS en cuda...
+       OK gen=33.3s dur=60.0s RTF=0.55
+  RUN  Moss-TTS ru cuda...
+       OK gen=33.0s dur=60.0s RTF=0.55
+  RUN  VoxCPM en cuda...
+       FAIL: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 h
+  RUN  VoxCPM ru cuda...
+       FAIL: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 h
+  SKIP pocket-tts en cuda
+  SKIP sherpa-onnx en cuda
+  SKIP sherpa-onnx ru cuda
+  SKIP Supertonic en cuda
+  SKIP Supertonic ru cuda
+  SKIP OmniVoice en cuda
+  SKIP OmniVoice ru cuda
+  SKIP Vosk-TTS ru cuda
+  RUN  Bark en cuda...
+       OK gen=35.6s dur=13.9s RTF=2.56
+  RUN  Bark ru cuda...
+       OK gen=25.0s dur=11.1s RTF=2.24
+  SKIP SeamlessM4T en cuda
+  SKIP SeamlessM4T ru cuda
+  RUN  Maha TTS en cuda...
+       OK gen=314.2s dur=20.0s RTF=15.73
+  RUN  F5-TTS en cuda...
+       OK gen=692.9s dur=71.9s RTF=9.63
+  RUN  F5-TTS ru cuda...
+       FAIL: timeout (1200s)
+  RUN  StyleTTS2 en cuda...
+       OK gen=26.9s dur=56.3s RTF=0.48
+  SKIP Chatterbox en cuda
+  SKIP Chatterbox ru cuda
+  RUN  Parler TTS en cuda...
+       OK gen=116.9s dur=58.9s RTF=1.99
+  RUN  Vall-E X en cuda...
+       OK gen=51.8s dur=57.8s RTF=0.90
+  RUN  XTTS en cuda...
+       OK gen=42.6s dur=51.8s RTF=0.82
+  RUN  XTTS ru cuda...
+       OK gen=40.9s dur=54.0s RTF=0.76
+  RUN  CosyVoice en cuda...
+       OK gen=62.7s dur=47.1s RTF=1.33
+  RUN  CosyVoice ru cuda...
+       OK gen=82.7s dur=73.0s RTF=1.13
+  SKIP DIA en cuda
+  SKIP MARS5 en cuda
+
+============================================================
+  CPU
+============================================================
+  SKIP Kokoro en cpu
+  SKIP Kokoro ru cpu
+  SKIP MMS en cpu
+  SKIP MMS ru cpu
+  SKIP Piper en cpu
+  SKIP Piper ru cpu
+  SKIP MeloTTS en cpu
+  SKIP Moss-TTS en cpu
+  SKIP Moss-TTS ru cpu
+  RUN  VoxCPM en cpu...
+       FAIL:  11%|█▏        | 100/886 [04:36<33:57,  2.59s/it]
+  RUN  VoxCPM ru cpu...
+       FAIL: 100%|██████████| 10/10 [00:26<00:00,  2.65s/it]
+  SKIP pocket-tts en cpu
+  SKIP sherpa-onnx en cpu
+  SKIP sherpa-onnx ru cpu
+  SKIP Supertonic en cpu
+  SKIP Supertonic ru cpu
+  SKIP OmniVoice en cpu
+  SKIP OmniVoice ru cpu
+  SKIP Vosk-TTS ru cpu
+  RUN  Bark en cpu...
+       OK gen=142.7s dur=13.9s RTF=10.25
+  RUN  Bark ru cpu...
+       FAIL:   3%|▎         | 1/35 [00:01<01:07,  1.98s/it]
+  SKIP SeamlessM4T en cpu
+  SKIP SeamlessM4T ru cpu
+  RUN  Maha TTS en cpu...
+       FAIL:  18%|█▊        | 178/1000 [01:37<08:08,  1.68it/s]
+  RUN  F5-TTS en cpu...
+       FAIL: unknown
+  RUN  F5-TTS ru cpu...
+       FAIL: unknown
+  SKIP StyleTTS2 en cpu
+  SKIP Chatterbox en cpu
+  SKIP Chatterbox ru cpu
+  RUN  Parler TTS en cpu...
+       OK gen=590.9s dur=54.3s RTF=10.89
+  RUN  Vall-E X en cpu...
+       FAIL: unknown
+  RUN  XTTS en cpu...
+       OK gen=149.5s dur=49.6s RTF=3.01
+  RUN  XTTS ru cpu...
+       OK gen=160.2s dur=52.8s RTF=3.03
+  RUN  CosyVoice en cpu...
+       FAIL: unknown
+  RUN  CosyVoice ru cpu...
+       FAIL: 2026-10-01 22:11:21,898 INFO building fst for zh_normalizer ...
+  SKIP DIA en cpu
+  SKIP MARS5 en cpu
+
+Done! 74 results in /home/topus009/projects/globas-tts/benchmark_output/results.json

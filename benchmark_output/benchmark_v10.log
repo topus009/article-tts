@@ -1,0 +1,74 @@
+Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  CPU
+============================================================
+  SKIP Kokoro en cpu
+  SKIP Kokoro ru cpu
+  SKIP MMS en cpu
+  SKIP MMS ru cpu
+  SKIP Piper en cpu
+  SKIP Piper ru cpu
+  SKIP sherpa-onnx en cpu
+  SKIP sherpa-onnx ru cpu
+  SKIP Supertonic en cpu
+  SKIP Supertonic ru cpu
+  RUN  Silero ru cpu...
+       OK gen=7.8s dur=12.5s RTF=0.62
+  SKIP Vosk-TTS en cpu
+  SKIP Vosk-TTS ru cpu
+  SKIP Bark en cpu
+  SKIP Bark ru cpu
+  SKIP SeamlessM4T en cpu
+  SKIP SeamlessM4T ru cpu
+  SKIP Maha TTS en cpu
+  SKIP F5-TTS en cpu
+  SKIP F5-TTS ru cpu
+  SKIP StyleTTS2 en cpu
+  SKIP Chatterbox en cpu
+  SKIP Parler TTS en cpu
+  SKIP Vall-E X en cpu
+  SKIP XTTS en cpu
+  SKIP XTTS ru cpu
+  SKIP CosyVoice en cpu
+  SKIP CosyVoice ru cpu
+  SKIP DIA en cpu
+  SKIP MARS5 en cpu
+
+============================================================
+  CUDA
+============================================================
+  SKIP Kokoro en cuda
+  SKIP Kokoro ru cuda
+  SKIP MMS en cuda
+  SKIP MMS ru cuda
+  SKIP Piper en cuda
+  SKIP Piper ru cuda
+  SKIP sherpa-onnx en cuda
+  SKIP sherpa-onnx ru cuda
+  SKIP Supertonic en cuda
+  SKIP Supertonic ru cuda
+  RUN  Silero ru cuda...
+       OK gen=2.7s dur=12.5s RTF=0.21
+  SKIP Vosk-TTS en cuda
+  SKIP Vosk-TTS ru cuda
+  SKIP Bark en cuda
+  SKIP Bark ru cuda
+  SKIP SeamlessM4T en cuda
+  SKIP SeamlessM4T ru cuda
+  SKIP Maha TTS en cuda
+  SKIP F5-TTS en cuda
+  SKIP F5-TTS ru cuda
+  SKIP StyleTTS2 en cuda
+  SKIP Chatterbox en cuda
+  SKIP Parler TTS en cuda
+  SKIP Vall-E X en cuda
+  SKIP XTTS en cuda
+  SKIP XTTS ru cuda
+  SKIP CosyVoice en cuda
+  SKIP CosyVoice ru cuda
+  SKIP DIA en cuda
+  SKIP MARS5 en cuda
+
+Done! 60 results in /home/topus009/projects/globas-tts/benchmark_output/results.json

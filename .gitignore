@@ -1,0 +1,19 @@
+# Model weights and engine caches (hundreds of MB / GB, fetched at runtime)
+maha_models/
+sherpa_models/
+xtts_home/
+benchmark_output/piper_cache/
+
+# Local media artifacts
+podcast/
+podcast.zip
+
+# Third-party clone with its own git history and upstream remote
+TTS-WebUI/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Tooling
+.qwen/

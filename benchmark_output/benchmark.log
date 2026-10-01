@@ -1,0 +1,58 @@
+Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  Device: CPU
+============================================================
+  RUN  Kokoro en cpu... OK (33.14s, RTF=2.18)
+  RUN  Kokoro ru cpu... OK (27.92s, RTF=0.91)
+  RUN  Bark en cpu... FAIL: Check the documentation of torch.load to learn more about types accepted by default with weights_only https://pytorch.org/docs/stable/generated/torch.
+  RUN  Bark ru cpu... FAIL: Check the documentation of torch.load to learn more about types accepted by default with weights_only https://pytorch.org/docs/stable/generated/torch.
+  RUN  MMS en cpu... OK (6.48s, RTF=0.46)
+  RUN  MMS ru cpu... OK (6.66s, RTF=0.43)
+  RUN  SeamlessM4T en cpu... FAIL: ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str
+  RUN  SeamlessM4T ru cpu... FAIL: ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str
+  RUN  Maha TTS en cpu... FAIL: timeout (300s)
+  RUN  Piper en cpu... FAIL: FileNotFoundError: [Errno 2] No such file or directory: '/home/topus009/projects/globas-tts/benchmark_output/piper_en.onnx.json'
+  RUN  Piper ru cpu... FAIL: urllib.error.HTTPError: HTTP Error 404: Not Found
+  RUN  F5-TTS en cpu... FAIL: FileNotFoundError: [Errno 2] No such file or directory: 'hexgrad/Kokoro-82M'
+  RUN  F5-TTS ru cpu... FAIL: FileNotFoundError: [Errno 2] No such file or directory: 'hexgrad/Kokoro-82M'
+  RUN  StyleTTS2 en cpu... Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  Device: CPU
+============================================================
+  SKIP Kokoro en cpu (already done)
+  SKIP Kokoro ru cpu (already done)
+  RUN  Bark en cpu... FAIL:   0%|          | 0.00/88.9M [00:00<?, ?B/s]
+  RUN  Bark ru cpu... FAIL:   0%|          | 0.00/88.9M [00:00<?, ?B/s]
+  SKIP MMS en cpu (already done)
+  SKIP MMS ru cpu (already done)
+  RUN  SeamlessM4T en cpu... FAIL: ValueError: Unrecognized model in facebook/seamless-m4t-medium. Should have a `model_type` key in its config.json, or contain one of the following str
+  RUN  SeamlessM4T ru cpu... FAIL: Unknown error
+  RUN  Maha TTS en cpu... Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  Device: CPU
+============================================================
+  SKIP Kokoro en cpu (already done)
+  SKIP Kokoro ru cpu (already done)
+  SKIP Bark en cpu (already done)
+  SKIP Bark ru cpu (already done)
+  SKIP MMS en cpu (already done)
+  SKIP MMS ru cpu (already done)
+  SKIP SeamlessM4T en cpu (already done)
+  SKIP SeamlessM4T ru cpu (already done)
+  RUN  Maha TTS en cpu... FAIL: /home/topus009/.cache/maha_tts/models/Smolie-en/s2a_latest.pt:   0%|          | 16.0k/1.60G [00:20<238:13:27, 2.01kB/s]
+  RUN  Piper en cpu... FAIL: FileNotFoundError: [Errno 2] No such file or directory: '/home/topus009/projects/globas-tts/benchmark_output/piper_en.onnx.json'
+  RUN  Piper ru cpu... Devices: ['cpu', 'cuda']
+GPU: NVIDIA GeForce GTX 1650 Ti
+
+============================================================
+  Device: CPU
+============================================================
+  SKIP Kokoro en cpu (already done)
+  SKIP Kokoro ru cpu (already done)
+  RUN  Bark en cpu... 
